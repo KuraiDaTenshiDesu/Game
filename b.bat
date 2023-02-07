@@ -1,0 +1,1 @@
+gcc main.c src/map.c -O2 -Wall -Wno-missing-braces -o main -I headers/ -L lib/ -lraylib -lopengl32 -lgdi32 -lwinmm
