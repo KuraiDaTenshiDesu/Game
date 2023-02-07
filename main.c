@@ -2,6 +2,7 @@
 #include "raylib.h"
 
 #include "map.h"
+#include "enemy.h"
 
 int main(void)
 {
@@ -14,6 +15,7 @@ int main(void)
 
     Map_Prepare(10, 10);
     Map_Fill();
+    Map_Draw();
 
     while (!WindowShouldClose())
     {

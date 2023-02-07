@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "pair.h"
-
-struct
+typedef struct
 {
 	char *name;
 	char *description;
-	Pair position;
+	int x;
+	int y;
 	int health;
 	int damage;
 	char *texture;
