@@ -21,14 +21,18 @@ int main(void)
 
     // Audio
     InitAudioDevice();
-    SetMasterVolume(0.0f);
+    SetMasterVolume(0.2f);
     Music bgm = LoadMusicStream("sound/bgm_template.mp3");
     PlayMusicStream(bgm);
 
     // Player
     Texture2D PlayerTextureRight = LoadTexture("img/player_right.png");
     Texture2D PlayerTextureLeft = LoadTexture("img/player_left.png");
-    Texture2D currentPlayerTexture = PlayerTextureRight;
+    Texture2D PlayerTextureFront = LoadTexture("img/player_front.png");
+    Texture2D PlayerTextureBack = LoadTexture("img/player_back.png");
+
+    Texture2D currentPlayerTexture = PlayerTextureFront;
+
     Vector2 playerPosition = (Vector2){(float)100, (float)100};
     float speed = 10.0f;
 
@@ -63,6 +67,7 @@ int main(void)
             if (playerPosition.y - speed > 160)
             {
                 playerPosition.y -= speed;
+                currentPlayerTexture = PlayerTextureBack;
             }
         }
 
@@ -71,6 +76,7 @@ int main(void)
             if (playerPosition.y + speed < screenHeight - 128)
             {
                 playerPosition.y += speed;
+                currentPlayerTexture = PlayerTextureFront;
             }
         }
 
