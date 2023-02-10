@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "raylib.h"
 
 #include "pair.h"
@@ -11,14 +10,15 @@ struct
     int *matrix;
 } Map;
 
-Texture2D wood;
-Texture2D stone;
+Texture2D textures[2];
+
 int tileSize = 64;
 
 void Map_Prepare(int x, int y)
 {
-    wood = LoadTexture("img/wood.png");
-    stone = LoadTexture("img/stone.png");
+    textures[0] = LoadTexture("img/wood.png");
+    textures[1] = LoadTexture("img/stone.png");
+
     Map.pair.x = x;
     Map.pair.y = y;
     Map.matrix = (int *)malloc(sizeof(int) * x * y);
@@ -26,15 +26,13 @@ void Map_Prepare(int x, int y)
 
 void Map_Fill()
 {
-    srand(time(NULL));
-
     for (int x = Map.pair.x - 1; x >= 0; x--)
     {
         for (int y = Map.pair.y - 1; y >= 0; y--)
         {
             if (y >= 3)
             {
-                Map.matrix[x * Map.pair.x + y] = 2;
+                Map.matrix[x * Map.pair.x + y] = 0;
             }
 
             if (y < 3)
@@ -45,24 +43,13 @@ void Map_Fill()
     }
 }
 
-Texture2D current;
 void Map_Draw()
 {
     for (int x = Map.pair.x - 1; x >= 0; x--)
     {
         for (int y = Map.pair.y - 1; y >= 0; y--)
         {
-            if (Map.matrix[x * Map.pair.x + y] == 1)
-            {
-                current = stone;
-            }
-
-            if (Map.matrix[x * Map.pair.x + y] == 2)
-            {
-                current = wood;
-            }
-
-            DrawTexture(current, x * tileSize, y * tileSize, WHITE);
+            DrawTexture(textures[Map.matrix[x * Map.pair.x + y]], x * tileSize, y * tileSize, WHITE);
         }
     }
 }

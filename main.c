@@ -33,7 +33,7 @@ int main(void)
 
     Texture2D currentPlayerTexture = PlayerTextureFront;
 
-    Vector2 playerPosition = (Vector2){(float)100, (float)100};
+    Vector2 playerPosition = (Vector2){(float)screenWidth / 2 - 64, (float)screenWidth / 2 - 64};
     float speed = 10.0f;
 
     // Map
