@@ -9,8 +9,8 @@ int main(void)
     const int screenHeight = 600;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - keyboard input");
-    SetWindowSize(GetMonitorWidth(0), GetMonitorHeight(0));
-    ToggleFullscreen();
+    InitAudioDevice();
+    SetMasterVolume(0.1f);
 
     int width = GetScreenWidth();
     int height = GetScreenHeight();
@@ -19,12 +19,13 @@ int main(void)
     Texture2D PlayerTextureLeft = LoadTexture("img/player_left.png");
     Texture2D current = PlayerTextureRight;
 
-    Vector2 playerPosition = (Vector2){ (float)500, (float)500 };
+    Vector2 playerPosition = (Vector2){(float)100, (float)100};
+
+    Music bgm = LoadMusicStream("sound/bgm_template.mp3");
+    PlayMusicStream(bgm);
 
     bool exitWindowRequested = false;
     bool exitWindow = false;
-
-    // Color myColor = {255, 0, 102, 1};
 
     SetTargetFPS(60);
 
@@ -35,9 +36,11 @@ int main(void)
 
     while (!exitWindow)
     {
-        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) 
+        UpdateMusicStream(bgm);
+
+        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
         {
-            if(playerPosition.x + speed < width - 100)
+            if (playerPosition.x + speed < width - 100)
             {
                 playerPosition.x += speed;
                 current = PlayerTextureRight;
@@ -46,7 +49,7 @@ int main(void)
 
         if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
         {
-            if(playerPosition.x - speed > 0)
+            if (playerPosition.x - speed > 0)
             {
                 playerPosition.x -= speed;
                 current = PlayerTextureLeft;
@@ -55,14 +58,15 @@ int main(void)
 
         if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
         {
-            if(playerPosition.y - speed > 0){
+            if (playerPosition.y - speed > 0)
+            {
                 playerPosition.y -= speed;
             }
         }
 
         if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
         {
-            if(playerPosition.y + speed < height - 100)
+            if (playerPosition.y + speed < height - 100)
             {
                 playerPosition.y += speed;
             }
@@ -73,29 +77,45 @@ int main(void)
             exitWindowRequested = true;
         }
 
+        if (IsKeyPressed(KEY_F))
+        {
+            ToggleFullscreen();
+        }
+
         if (exitWindowRequested)
         {
-            if (IsKeyPressed(KEY_Y)) exitWindow = true;
-            else if (IsKeyPressed(KEY_N)) exitWindowRequested = false;
+            if (IsKeyPressed(KEY_Y))
+            {
+                exitWindow = true;
+            }
+
+            else if (IsKeyPressed(KEY_N))
+            {
+                exitWindowRequested = false;
+            }
         }
 
         BeginDrawing();
-            ClearBackground(BLACK);
+        ClearBackground(BLACK);
 
-            Map_Draw(50);
+        Map_Draw(50);
 
-            DrawTextureEx(current, playerPosition, 0, 0.125, WHITE);
+        DrawTextureEx(current, playerPosition, 0, 0.125, WHITE);
 
-            DrawFPS(50, 50);
-            
-            if (exitWindowRequested)
-            {
-                DrawRectangle(0, 0, width, height + 10, BLACK);
-                DrawText("Quit the game? [Y/N]", (float) width / 3, (float) height / 3, 30, WHITE);
-            }
+        DrawFPS(50, 50);
+
+        if (exitWindowRequested)
+        {
+            DrawRectangle(0, 0, width, height + 10, BLACK);
+            DrawText("Quit the game? [Y/N]", (float)width / 3, (float)height / 3, 30, WHITE);
+        }
 
         EndDrawing();
     }
+
+    UnloadMusicStream(bgm);
+
+    CloseAudioDevice();
 
     CloseWindow();
 

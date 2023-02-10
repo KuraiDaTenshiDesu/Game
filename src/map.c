@@ -26,13 +26,13 @@ void Map_Prepare(int x, int y)
 void Map_Fill()
 {
     srand(time(NULL));
-    
+
     for (int x = Map.pair.x - 1; x >= 0; x--)
     {
         for (int y = Map.pair.y - 1; y >= 0; y--)
         {
-            int r = rand() % 2 + 1;
-            Map.matrix[x * Map.pair.x + y] = r;
+            // Map.matrix[x * Map.pair.x + y] = rand() % 2 + 1;
+            Map.matrix[x * Map.pair.x + y] = 1;
         }
     }
 }
