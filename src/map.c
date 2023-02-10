@@ -11,12 +11,13 @@ struct
     int *matrix;
 } Map;
 
-Texture2D grass;
+Texture2D wood;
 Texture2D stone;
+int tileSize = 64;
 
 void Map_Prepare(int x, int y)
 {
-    grass = LoadTexture("img/grass.png");
+    wood = LoadTexture("img/wood.png");
     stone = LoadTexture("img/stone.png");
     Map.pair.x = x;
     Map.pair.y = y;
@@ -31,14 +32,21 @@ void Map_Fill()
     {
         for (int y = Map.pair.y - 1; y >= 0; y--)
         {
-            // Map.matrix[x * Map.pair.x + y] = rand() % 2 + 1;
-            Map.matrix[x * Map.pair.x + y] = 1;
+            if (y >= 3)
+            {
+                Map.matrix[x * Map.pair.x + y] = 2;
+            }
+
+            if (y < 3)
+            {
+                Map.matrix[x * Map.pair.x + y] = 1;
+            }
         }
     }
 }
 
 Texture2D current;
-void Map_Draw(int tileSize)
+void Map_Draw()
 {
     for (int x = Map.pair.x - 1; x >= 0; x--)
     {
@@ -51,7 +59,7 @@ void Map_Draw(int tileSize)
 
             if (Map.matrix[x * Map.pair.x + y] == 2)
             {
-                current = grass;
+                current = wood;
             }
 
             DrawTexture(current, x * tileSize, y * tileSize, WHITE);
