@@ -3,17 +3,52 @@
 
 #include "map.h"
 
+struct
+{
+    int hp;
+    int atk;
+    Texture2D textures[4];
+    Vector2 position;
+    float speed;
+} Player;
+
+void Player_Init(int hp, int atk, float x, float y, float speed)
+{
+    Player.hp = hp;
+    Player.atk = atk;
+    Player.textures[0] = LoadTexture("img/player_front.png");
+    Player.textures[1] = LoadTexture("img/player_back.png");
+    Player.textures[2] = LoadTexture("img/player_right.png");
+    Player.textures[3] = LoadTexture("img/player_left.png");
+    Player.position = (Vector2){x, y};
+    Player.speed = speed;
+}
+
+void Player_Take_Damage()
+{
+    Player.hp--;
+}
+
+void Player_Heal()
+{
+    if (Player.hp < 10)
+    {
+        Player.hp++;
+    }
+}
+
 int main(void)
 {
     // Window
     const int screenWidthDefault = 800;
     const int screenHeightDefault = 600;
 
-    InitWindow(screenWidthDefault, screenHeightDefault, "raylib [core] example - keyboard input");
+    InitWindow(screenWidthDefault, screenHeightDefault, "2D Roguelike Game");
     const int screenWidth = GetMonitorWidth(GetCurrentMonitor());
     const int screenHeight = GetMonitorHeight(GetCurrentMonitor());
     SetWindowSize(screenWidth, screenHeight);
     ToggleFullscreen();
+    HideCursor();
 
     SetTargetFPS(60);
 
@@ -27,15 +62,8 @@ int main(void)
     PlayMusicStream(bgm);
 
     // Player
-    Texture2D PlayerTextureRight = LoadTexture("img/player_right.png");
-    Texture2D PlayerTextureLeft = LoadTexture("img/player_left.png");
-    Texture2D PlayerTextureFront = LoadTexture("img/player_front.png");
-    Texture2D PlayerTextureBack = LoadTexture("img/player_back.png");
-
-    Texture2D currentPlayerTexture = PlayerTextureFront;
-
-    Vector2 playerPosition = (Vector2){(float)screenWidth / 2 - 64, (float)screenWidth / 2 - 64};
-    float speed = 10.0f;
+    Player_Init(10, 5, (float)screenWidth / 2 - 128, (float)screenHeight / 2 - 128, 5.0f);
+    Texture2D currentPlayerTexture = Player.textures[0];
 
     // Map
     Map_Prepare(50, 50);
@@ -47,38 +75,53 @@ int main(void)
 
         if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
         {
-            currentPlayerTexture = PlayerTextureRight;
-            if (playerPosition.x + speed < screenWidth - 128)
+            currentPlayerTexture = Player.textures[2];
+            if (Player.position.x + Player.speed < screenWidth - 128)
             {
-                playerPosition.x += speed;
+                Player.position.x += Player.speed;
             }
         }
 
         if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
         {
-            currentPlayerTexture = PlayerTextureLeft;
-            if (playerPosition.x - speed > 0)
+            currentPlayerTexture = Player.textures[3];
+            if (Player.position.x - Player.speed > 0)
             {
-                playerPosition.x -= speed;
+                Player.position.x -= Player.speed;
             }
         }
 
         if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
         {
-            currentPlayerTexture = PlayerTextureBack;
-            if (playerPosition.y - speed > 160)
+            currentPlayerTexture = Player.textures[1];
+            if (Player.position.y - Player.speed > 160)
             {
-                playerPosition.y -= speed;
+                Player.position.y -= Player.speed;
             }
         }
 
         if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
         {
-            currentPlayerTexture = PlayerTextureFront;
-            if (playerPosition.y + speed < screenHeight - 128)
+            currentPlayerTexture = Player.textures[0];
+            if (Player.position.y + Player.speed < screenHeight - 128)
             {
-                playerPosition.y += speed;
+                Player.position.y += Player.speed;
             }
+        }
+
+        if (IsKeyPressed(KEY_Z))
+        {
+            Player_Take_Damage();
+        }
+
+        if (IsKeyPressed(KEY_X))
+        {
+            Player_Heal();
+        }
+
+        if (Player.hp == 0)
+        {
+            exitWindowRequested = true;
         }
 
         if (WindowShouldClose() || IsKeyPressed(KEY_ESCAPE))
@@ -104,9 +147,12 @@ int main(void)
 
         Map_Draw(50);
 
-        DrawTextureEx(currentPlayerTexture, playerPosition, 0, 1, WHITE);
+        DrawTexture(currentPlayerTexture, Player.position.x, Player.position.y, WHITE);
 
-        DrawFPS(50, 50);
+        for (int i = 1; i <= Player.hp; i++)
+        {
+            DrawRectangle(50 * i + 10, 50, 40, 40, RED);
+        }
 
         if (exitWindowRequested)
         {
