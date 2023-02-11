@@ -5,6 +5,7 @@
 
 int main(void)
 {
+    // Window
     const int screenWidthDefault = 800;
     const int screenHeightDefault = 600;
 
@@ -46,37 +47,37 @@ int main(void)
 
         if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
         {
+            currentPlayerTexture = PlayerTextureRight;
             if (playerPosition.x + speed < screenWidth - 128)
             {
                 playerPosition.x += speed;
-                currentPlayerTexture = PlayerTextureRight;
             }
         }
 
         if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
         {
+            currentPlayerTexture = PlayerTextureLeft;
             if (playerPosition.x - speed > 0)
             {
                 playerPosition.x -= speed;
-                currentPlayerTexture = PlayerTextureLeft;
             }
         }
 
         if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
         {
+            currentPlayerTexture = PlayerTextureBack;
             if (playerPosition.y - speed > 160)
             {
                 playerPosition.y -= speed;
-                currentPlayerTexture = PlayerTextureBack;
             }
         }
 
         if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
         {
+            currentPlayerTexture = PlayerTextureFront;
             if (playerPosition.y + speed < screenHeight - 128)
             {
                 playerPosition.y += speed;
-                currentPlayerTexture = PlayerTextureFront;
             }
         }
 
