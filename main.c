@@ -14,7 +14,7 @@ const int tileSize = tileSizeDefault * multiplyer;
 const int FrameRate = 60;
 int frames = 0;
 int currentFrame = 0;
-int framesDelay = 10;
+int framesDelay = 3;
 int frameCounter = 0;
 unsigned int nextFrameDataOffset = 0;
 
@@ -41,30 +41,26 @@ struct
 {
 	Vector2 coordinates;
 	float speed;
-	Texture2D textures[4];
-	int currentTexture;
+	Texture2D textures[2];
+	int currentDirection;
 } Player;
 
 enum
 {
-	FRONT,
-	BACK,
 	LEFT,
 	RIGHT
 };
 
-void Player_Init(Vector2 coordinates, float speed, Image front, Image back, Image left, Image right)
+void Player_Init(Vector2 coordinates, float speed, Image left, Image right)
 {
 	Player.coordinates.x = coordinates.x;
 	Player.coordinates.y = coordinates.y;
 	Player.speed = speed;
 
-	Player.textures[0] = LoadTextureFromImage(front);
-	Player.textures[1] = LoadTextureFromImage(back);
-	Player.textures[2] = LoadTextureFromImage(left);
-	Player.textures[3] = LoadTextureFromImage(right);
+	Player.textures[0] = LoadTextureFromImage(left);
+	Player.textures[1] = LoadTextureFromImage(right);
 
-	Player.currentTexture = FRONT;
+	Player.currentDirection = RIGHT;
 }
 
 void Player_Move(Image texture)
@@ -72,39 +68,37 @@ void Player_Move(Image texture)
 	if (IsKeyDown(KEY_W))
 	{
 		Player.coordinates.y -= Player.speed;
-		Player.currentTexture = BACK;
-		Update_Frame(texture, Player.textures[Player.currentTexture]);
+		Update_Frame(texture, Player.textures[Player.currentDirection]);
 	}
 
 	if (IsKeyDown(KEY_S))
 	{
 		Player.coordinates.y += Player.speed;
-		Player.currentTexture = FRONT;
-		Update_Frame(texture, Player.textures[Player.currentTexture]);
+		Update_Frame(texture, Player.textures[Player.currentDirection]);
 	}
 
 	if (IsKeyDown(KEY_A))
 	{
 		Player.coordinates.x -= Player.speed;
-		Player.currentTexture = LEFT;
-		Update_Frame(texture, Player.textures[Player.currentTexture]);
+		Player.currentDirection = LEFT;
+		Update_Frame(texture, Player.textures[Player.currentDirection]);
 	}
 
 	if (IsKeyDown(KEY_D))
 	{
 		Player.coordinates.x += Player.speed;
-		Player.currentTexture = RIGHT;
-		Update_Frame(texture, Player.textures[Player.currentTexture]);
+		Player.currentDirection = RIGHT;
+		Update_Frame(texture, Player.textures[Player.currentDirection]);
 	}
 
 	if (IsKeyPressed(KEY_LEFT_SHIFT))
 	{
-		Player.speed += 5.0f;
+		Player.speed += 3.0f;
 	}
 
 	if (IsKeyReleased(KEY_LEFT_SHIFT))
 	{
-		Player.speed -= 5.0f;
+		Player.speed -= 3.0f;
 	}
 }
 
@@ -140,13 +134,11 @@ int main(void)
 	SetTargetFPS(FrameRate);
 
 	// Player
-	Image textureAnims[4];
-	textureAnims[0] = LoadImageAnim("resources/img/player_front.gif", &frames);
-	textureAnims[1] = LoadImageAnim("resources/img/player_back.gif", &frames);
-	textureAnims[2] = LoadImageAnim("resources/img/player_left.gif", &frames);
-	textureAnims[3] = LoadImageAnim("resources/img/player_right.gif", &frames);
+	Image textureAnims[2];
+	textureAnims[0] = LoadImageAnim("resources/img/player_left.gif", &frames);
+	textureAnims[1] = LoadImageAnim("resources/img/player_right.gif", &frames);
 
-	Player_Init((Vector2){100, 100}, 2.5f, textureAnims[0], textureAnims[1], textureAnims[2], textureAnims[3]);
+	Player_Init((Vector2){100, 100}, 2.0f, textureAnims[0], textureAnims[1]);
 
 	// Map tiles
 	struct Tile grass = (struct Tile){LoadTexture("resources/img/grass.png"), true};
@@ -154,7 +146,7 @@ int main(void)
 	// Game loop
 	while (!WindowShouldClose())
 	{
-		Player_Move(textureAnims[Player.currentTexture]);
+		Player_Move(textureAnims[Player.currentDirection]);
 
 		// Drawing
 		BeginDrawing();
@@ -163,7 +155,7 @@ int main(void)
 
 		Draw_Tiles(grass);
 
-		DrawTextureEx(Player.textures[Player.currentTexture], Player.coordinates, 0, multiplyer, WHITE);
+		DrawTextureEx(Player.textures[Player.currentDirection], Player.coordinates, 0, multiplyer, WHITE);
 
 		EndDrawing();
 	}
