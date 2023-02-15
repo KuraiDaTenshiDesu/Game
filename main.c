@@ -112,13 +112,41 @@ struct Tile
 
 struct Tile tiles[10];
 
-void Draw_Tiles(struct Tile tile)
+void Draw_Tiles()
 {
 	for (int x = 0; x < tilesCols; x++)
 	{
 		for (int y = 0; y < tilesRows; y++)
 		{
-			DrawTextureEx(tile.texture, (Vector2){x * tileSize, y * tileSize}, 0, multiplyer, WHITE);
+			if (x == 0 || y == 0 || x == tilesCols - 1 || y == tilesRows - 1)
+			{
+				DrawTextureEx(tiles[1].texture, (Vector2){x * tileSize, y * tileSize}, 0, multiplyer, WHITE);
+			}
+			else
+			{
+				DrawTextureEx(tiles[0].texture, (Vector2){x * tileSize, y * tileSize}, 0, multiplyer, WHITE);
+			}
+		}
+	}
+}
+
+void Draw_Tiles_Test(char *map)
+{
+	int x = 0;
+	int y = 0;
+
+	for (int i = 0; i < strlen(map); i++)
+	{
+		if ((int)map[i] != 10)
+		{
+			DrawTextureEx(tiles[(int)map[i] - (int)'0'].texture, (Vector2){x * tileSize, y * tileSize}, 0, multiplyer, WHITE);
+
+			x++;
+			if (x == tilesCols)
+			{
+				x = 0;
+				y++;
+			}
 		}
 	}
 }
@@ -147,7 +175,13 @@ int main(void)
 	tiles[0] = (struct Tile){LoadTexture("resources/img/grass.png"), true};
 	tiles[1] = (struct Tile){LoadTexture("resources/img/stone_wall.png"), false};
 
-	// Game loop
+	// printf("%lld \n", strlen(LoadFileText("resources/maps/map.txt")));
+
+	char *map = LoadFileText("resources/maps/test_map.txt");
+
+	// ========================
+	// GAME LOOP
+	//=========================
 	while (!WindowShouldClose())
 	{
 		Player_Move(textureAnims[Player.currentDirection]);
@@ -157,7 +191,7 @@ int main(void)
 
 		ClearBackground(WHITE);
 
-		Draw_Tiles(tiles[0]);
+		Draw_Tiles_Test(map);
 
 		DrawTextureEx(Player.textures[Player.currentDirection], Player.coordinates, 0, multiplyer, WHITE);
 
