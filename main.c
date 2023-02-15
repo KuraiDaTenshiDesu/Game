@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "raylib.h"
 
@@ -14,7 +15,7 @@ const int tileSize = tileSizeDefault * multiplyer;
 const int FrameRate = 60;
 int frames = 0;
 int currentFrame = 0;
-int framesDelay = 3;
+int framesDelay = 5;
 int frameCounter = 0;
 unsigned int nextFrameDataOffset = 0;
 
@@ -109,6 +110,8 @@ struct Tile
 	bool walkable;
 };
 
+struct Tile tiles[10];
+
 void Draw_Tiles(struct Tile tile)
 {
 	for (int x = 0; x < tilesCols; x++)
@@ -141,7 +144,8 @@ int main(void)
 	Player_Init((Vector2){100, 100}, 2.0f, textureAnims[0], textureAnims[1]);
 
 	// Map tiles
-	struct Tile grass = (struct Tile){LoadTexture("resources/img/grass.png"), true};
+	tiles[0] = (struct Tile){LoadTexture("resources/img/grass.png"), true};
+	tiles[1] = (struct Tile){LoadTexture("resources/img/stone_wall.png"), false};
 
 	// Game loop
 	while (!WindowShouldClose())
@@ -153,7 +157,7 @@ int main(void)
 
 		ClearBackground(WHITE);
 
-		Draw_Tiles(grass);
+		Draw_Tiles(tiles[0]);
 
 		DrawTextureEx(Player.textures[Player.currentDirection], Player.coordinates, 0, multiplyer, WHITE);
 
