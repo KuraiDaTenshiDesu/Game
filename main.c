@@ -3,8 +3,10 @@
 #include <string.h>
 
 #include "raylib.h"
+// #include "textures_draw_tiled.c"
 
 // Main info
+
 const int tileSizeDefault = 16;
 const int tilesCols = 16;
 const int tilesRows = 12;
@@ -13,36 +15,22 @@ const int multiplyer = 4;
 const int tileSize = tileSizeDefault * multiplyer;
 
 const int FrameRate = 60;
+
 int frames = 0;
 int currentFrame = 0;
-int framesDelay = 5;
+int framesDelay = 10;
 int frameCounter = 0;
 unsigned int nextFrameDataOffset = 0;
-
-void Update_Frame(Image image, Texture2D texture)
-{
-	frameCounter++;
-	if (frameCounter == framesDelay)
-	{
-		currentFrame++;
-		if (currentFrame >= frames)
-		{
-			currentFrame = 0;
-		}
-
-		frameCounter = 0;
-	}
-
-	nextFrameDataOffset = image.width * image.height * 4 * currentFrame;
-	UpdateTexture(texture, ((unsigned char *)image.data) + nextFrameDataOffset);
-}
+int maxAtlasFrames = 1;
+int atlasX = 0;
+int atlasY = 0;
 
 // Player
 struct
 {
 	Vector2 coordinates;
 	float speed;
-	Texture2D textures[2];
+	Texture2D textureAtlas;
 	int currentDirection;
 } Player;
 
@@ -52,54 +40,56 @@ enum
 	RIGHT
 };
 
-void Player_Init(Vector2 coordinates, float speed, Image left, Image right)
+void Player_Init(Vector2 coordinates, float speed, Texture2D atlas)
 {
 	Player.coordinates.x = coordinates.x;
 	Player.coordinates.y = coordinates.y;
 	Player.speed = speed;
 
-	Player.textures[0] = LoadTextureFromImage(left);
-	Player.textures[1] = LoadTextureFromImage(right);
+	Player.textureAtlas = atlas;
 
 	Player.currentDirection = RIGHT;
 }
 
-void Player_Move(Image texture)
+void Player_Move()
 {
 	if (IsKeyDown(KEY_W))
 	{
 		Player.coordinates.y -= Player.speed;
-		Update_Frame(texture, Player.textures[Player.currentDirection]);
 	}
 
 	if (IsKeyDown(KEY_S))
 	{
 		Player.coordinates.y += Player.speed;
-		Update_Frame(texture, Player.textures[Player.currentDirection]);
 	}
 
 	if (IsKeyDown(KEY_A))
 	{
 		Player.coordinates.x -= Player.speed;
 		Player.currentDirection = LEFT;
-		Update_Frame(texture, Player.textures[Player.currentDirection]);
 	}
 
 	if (IsKeyDown(KEY_D))
 	{
 		Player.coordinates.x += Player.speed;
 		Player.currentDirection = RIGHT;
-		Update_Frame(texture, Player.textures[Player.currentDirection]);
 	}
 
-	if (IsKeyPressed(KEY_LEFT_SHIFT))
+	if (IsKeyDown(KEY_W) || IsKeyDown(KEY_S) || IsKeyDown(KEY_A) || IsKeyDown(KEY_D))
 	{
-		Player.speed += 3.0f;
-	}
+		frameCounter++;
+		atlasY = Player.currentDirection;
 
-	if (IsKeyReleased(KEY_LEFT_SHIFT))
-	{
-		Player.speed -= 3.0f;
+		if (frameCounter == framesDelay)
+		{
+			frameCounter = 0;
+			atlasX++;
+
+			if (atlasX > maxAtlasFrames)
+			{
+				atlasX = 0;
+			}
+		}
 	}
 }
 
@@ -112,25 +102,7 @@ struct Tile
 
 struct Tile tiles[10];
 
-void Draw_Tiles()
-{
-	for (int x = 0; x < tilesCols; x++)
-	{
-		for (int y = 0; y < tilesRows; y++)
-		{
-			if (x == 0 || y == 0 || x == tilesCols - 1 || y == tilesRows - 1)
-			{
-				DrawTextureEx(tiles[1].texture, (Vector2){x * tileSize, y * tileSize}, 0, multiplyer, WHITE);
-			}
-			else
-			{
-				DrawTextureEx(tiles[0].texture, (Vector2){x * tileSize, y * tileSize}, 0, multiplyer, WHITE);
-			}
-		}
-	}
-}
-
-void Draw_Tiles_Test(char *map)
+void Draw_Tiles(char *map)
 {
 	int x = 0;
 	int y = 0;
@@ -165,17 +137,14 @@ int main(void)
 	SetTargetFPS(FrameRate);
 
 	// Player
-	Image textureAnims[2];
-	textureAnims[0] = LoadImageAnim("resources/img/player_left.gif", &frames);
-	textureAnims[1] = LoadImageAnim("resources/img/player_right.gif", &frames);
 
-	Player_Init((Vector2){100, 100}, 2.0f, textureAnims[0], textureAnims[1]);
+	Texture2D atlas = LoadTexture("resources/img/player_atlas.png");
+
+	Player_Init((Vector2){100, 100}, 2.0f, atlas);
 
 	// Map tiles
 	tiles[0] = (struct Tile){LoadTexture("resources/img/grass.png"), true};
 	tiles[1] = (struct Tile){LoadTexture("resources/img/stone_wall.png"), false};
-
-	// printf("%lld \n", strlen(LoadFileText("resources/maps/map.txt")));
 
 	int mapNum = GetRandomValue(1, 3);
 	char *map;
@@ -191,6 +160,8 @@ int main(void)
 	case 3:
 		map = LoadFileText("resources/maps/map3.txt");
 		break;
+	default:
+		map = LoadFileText("resources/maps/map1.txt");
 	}
 
 	// ========================
@@ -198,17 +169,20 @@ int main(void)
 	//=========================
 	while (!WindowShouldClose())
 	{
-		Player_Move(textureAnims[Player.currentDirection]);
+		Player_Move();
 
 		// Drawing
 		BeginDrawing();
 
 		ClearBackground(WHITE);
 
-		Draw_Tiles_Test(map);
+		Draw_Tiles(map);
 
-		DrawTextureEx(Player.textures[Player.currentDirection], Player.coordinates, 0, multiplyer, WHITE);
-
+		// DrawTextureEx(Player.textures[Player.currentDirection], Player.coordinates, 0, multiplyer, WHITE);
+		DrawTexturePro(Player.textureAtlas,
+					   (Rectangle){atlasX * tileSizeDefault, atlasY * tileSizeDefault, tileSizeDefault, tileSizeDefault},
+					   (Rectangle){Player.coordinates.x, Player.coordinates.y, tileSize, tileSize},
+					   (Vector2){0, 0}, 0, WHITE);
 		EndDrawing();
 	}
 
