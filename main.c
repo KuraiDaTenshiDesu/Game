@@ -3,10 +3,8 @@
 #include <string.h>
 
 #include "raylib.h"
-// #include "textures_draw_tiled.c"
 
 // Main info
-
 const int tileSizeDefault = 16;
 const int tilesCols = 16;
 const int tilesRows = 12;
@@ -16,11 +14,8 @@ const int tileSize = tileSizeDefault * multiplyer;
 
 const int FrameRate = 60;
 
-int frames = 0;
-int currentFrame = 0;
 int framesDelay = 10;
 int frameCounter = 0;
-unsigned int nextFrameDataOffset = 0;
 int maxAtlasFrames = 1;
 int atlasX = 0;
 int atlasY = 0;
@@ -140,12 +135,13 @@ int main(void)
 
 	Texture2D atlas = LoadTexture("resources/img/player_atlas.png");
 
-	Player_Init((Vector2){100, 100}, 2.0f, atlas);
+	Player_Init((Vector2){tileSize * 5, tileSize * 5}, 2.0f, atlas);
 
 	// Map tiles
 	tiles[0] = (struct Tile){LoadTexture("resources/img/grass.png"), true};
 	tiles[1] = (struct Tile){LoadTexture("resources/img/stone_wall.png"), false};
 
+	// Getting random map file
 	int mapNum = GetRandomValue(1, 3);
 	char *map;
 
@@ -178,11 +174,11 @@ int main(void)
 
 		Draw_Tiles(map);
 
-		// DrawTextureEx(Player.textures[Player.currentDirection], Player.coordinates, 0, multiplyer, WHITE);
 		DrawTexturePro(Player.textureAtlas,
 					   (Rectangle){atlasX * tileSizeDefault, atlasY * tileSizeDefault, tileSizeDefault, tileSizeDefault},
 					   (Rectangle){Player.coordinates.x, Player.coordinates.y, tileSize, tileSize},
 					   (Vector2){0, 0}, 0, WHITE);
+
 		EndDrawing();
 	}
 
