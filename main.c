@@ -177,7 +177,21 @@ int main(void)
 
 	// printf("%lld \n", strlen(LoadFileText("resources/maps/map.txt")));
 
-	char *map = LoadFileText("resources/maps/test_map.txt");
+	int mapNum = GetRandomValue(1, 3);
+	char *map;
+
+	switch (mapNum)
+	{
+	case 1:
+		map = LoadFileText("resources/maps/map1.txt");
+		break;
+	case 2:
+		map = LoadFileText("resources/maps/map2.txt");
+		break;
+	case 3:
+		map = LoadFileText("resources/maps/map3.txt");
+		break;
+	}
 
 	// ========================
 	// GAME LOOP
