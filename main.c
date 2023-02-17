@@ -9,6 +9,7 @@ const int tileSizeDefault = 16;
 const int tilesCols = 16;
 const int tilesRows = 12;
 const int multiplyer = 4;
+const int maxMapSize = 64;
 
 const int tileSize = tileSizeDefault * multiplyer;
 
@@ -109,7 +110,7 @@ void Draw_Tiles(char *map)
 			DrawTextureEx(tiles[(int)map[i] - (int)'0'].texture, (Vector2){x * tileSize, y * tileSize}, 0, multiplyer, WHITE);
 
 			x++;
-			if (x == tilesCols)
+			if (x == maxMapSize)
 			{
 				x = 0;
 				y++;
@@ -140,30 +141,36 @@ int main(void)
 
 	Texture2D atlas = LoadTexture("resources/img/player_atlas.png");
 
-	Player_Init((Vector2){tileSize * 5, tileSize * 5}, 2.0f, atlas);
+	Player_Init((Vector2){tileSize * 2, tileSize * 1}, 2.0f, atlas);
 
 	// Map tiles
 	tiles[0] = (struct Tile){LoadTexture("resources/img/grass.png"), true};
 	tiles[1] = (struct Tile){LoadTexture("resources/img/stone_wall.png"), false};
+	tiles[2] = (struct Tile){LoadTexture("resources/img/stone_road.png"), true};
+	tiles[3] = (struct Tile){LoadTexture("resources/img/dirt.png"), true};
+	tiles[4] = (struct Tile){LoadTexture("resources/img/planks.png"), true};
 
 	// Getting random map file
-	int mapNum = GetRandomValue(1, 3);
-	char *map;
+	// int mapNum = GetRandomValue(1, 4);
+	char *map = LoadFileText("resources/maps/bigMap1.txt");
 
-	switch (mapNum)
-	{
-	case 1:
-		map = LoadFileText("resources/maps/map1.txt");
-		break;
-	case 2:
-		map = LoadFileText("resources/maps/map2.txt");
-		break;
-	case 3:
-		map = LoadFileText("resources/maps/map3.txt");
-		break;
-	default:
-		map = LoadFileText("resources/maps/map1.txt");
-	}
+	// switch (mapNum)
+	// {
+	// case 1:
+	// 	map = LoadFileText("resources/maps/map1.txt");
+	// 	break;
+	// case 2:
+	// 	map = LoadFileText("resources/maps/map2.txt");
+	// 	break;
+	// case 3:
+	// 	map = LoadFileText("resources/maps/map3.txt");
+	// 	break;
+	// case 4:
+	// 	map = LoadFileText("resources/maps/map4.txt");
+	// 	break;
+	// default:
+	// 	map = LoadFileText("resources/maps/map1.txt");
+	// }
 
 	// ========================
 	// GAME LOOP
@@ -177,7 +184,7 @@ int main(void)
 		BeginDrawing();
 		BeginMode2D(camera);
 
-		ClearBackground(WHITE);
+		ClearBackground(BLACK);
 
 		Draw_Tiles(map);
 
