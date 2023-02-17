@@ -131,6 +131,11 @@ int main(void)
 	InitWindow(screenWidth, screenHeight, "Game");
 	SetTargetFPS(FrameRate);
 
+	Camera2D camera;
+	camera.offset = (Vector2){screenWidth / 2.0f, screenHeight / 2.0f};
+	camera.rotation = 0.0f;
+	camera.zoom = 1.0f;
+
 	// Player
 
 	Texture2D atlas = LoadTexture("resources/img/player_atlas.png");
@@ -165,10 +170,12 @@ int main(void)
 	//=========================
 	while (!WindowShouldClose())
 	{
+		camera.target = (Vector2){Player.coordinates.x + tileSize, Player.coordinates.y + tileSize};
 		Player_Move();
 
 		// Drawing
 		BeginDrawing();
+		BeginMode2D(camera);
 
 		ClearBackground(WHITE);
 
@@ -178,6 +185,7 @@ int main(void)
 					   (Rectangle){atlasX * tileSizeDefault, atlasY * tileSizeDefault, tileSizeDefault, tileSizeDefault},
 					   (Rectangle){Player.coordinates.x, Player.coordinates.y, tileSize, tileSize},
 					   (Vector2){0, 0}, 0, WHITE);
+		EndMode2D();
 
 		EndDrawing();
 	}
