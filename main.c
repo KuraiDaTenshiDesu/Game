@@ -105,9 +105,13 @@ void Draw_Tiles(char *map)
 
 	for (int i = 0; i < strlen(map); i++)
 	{
+
 		if ((int)map[i] != 10)
 		{
-			DrawTextureEx(tiles[(int)map[i] - (int)'0'].texture, (Vector2){x * tileSize, y * tileSize}, 0, multiplyer, WHITE);
+			DrawTexturePro(tiles[(int)map[i] - (int)'0'].texture,
+						   (Rectangle){0, 0, tileSizeDefault, tileSizeDefault},
+						   (Rectangle){x * tileSize, y * tileSize, tileSize, tileSize},
+						   (Vector2){0, 0}, 0, WHITE);
 
 			x++;
 			if (x == maxMapSize)
@@ -149,35 +153,17 @@ int main(void)
 	tiles[2] = (struct Tile){LoadTexture("resources/img/stone_road.png"), true};
 	tiles[3] = (struct Tile){LoadTexture("resources/img/dirt.png"), true};
 	tiles[4] = (struct Tile){LoadTexture("resources/img/planks.png"), true};
+	tiles[5] = (struct Tile){LoadTexture("resources/img/birch_on_grass.png"), false};
+	tiles[6] = (struct Tile){LoadTexture("resources/img/oak_on_grass.png"), false};
 
-	// Getting random map file
-	// int mapNum = GetRandomValue(1, 4);
 	char *map = LoadFileText("resources/maps/bigMap1.txt");
-
-	// switch (mapNum)
-	// {
-	// case 1:
-	// 	map = LoadFileText("resources/maps/map1.txt");
-	// 	break;
-	// case 2:
-	// 	map = LoadFileText("resources/maps/map2.txt");
-	// 	break;
-	// case 3:
-	// 	map = LoadFileText("resources/maps/map3.txt");
-	// 	break;
-	// case 4:
-	// 	map = LoadFileText("resources/maps/map4.txt");
-	// 	break;
-	// default:
-	// 	map = LoadFileText("resources/maps/map1.txt");
-	// }
 
 	// ========================
 	// GAME LOOP
 	//=========================
 	while (!WindowShouldClose())
 	{
-		camera.target = (Vector2){Player.coordinates.x + tileSize, Player.coordinates.y + tileSize};
+		camera.target = (Vector2){Player.coordinates.x + tileSize / 2, Player.coordinates.y + tileSize / 2};
 		Player_Move();
 
 		// Drawing
@@ -192,6 +178,7 @@ int main(void)
 					   (Rectangle){atlasX * tileSizeDefault, atlasY * tileSizeDefault, tileSizeDefault, tileSizeDefault},
 					   (Rectangle){Player.coordinates.x, Player.coordinates.y, tileSize, tileSize},
 					   (Vector2){0, 0}, 0, WHITE);
+
 		EndMode2D();
 
 		EndDrawing();
