@@ -1,1 +1,1 @@
-gcc main.c -O2 -Wall -Wno-missing-braces -o main -I headers/ -L lib/ -lraylib -lopengl32 -lgdi32 -lwinmm
+gcc main.c resources/src/camera.c resources/src/map.c resources/src/player.c -O2 -Wall -Wno-missing-braces -o main -I headers/ -L lib/ -lraylib -lopengl32 -lgdi32 -lwinmm
